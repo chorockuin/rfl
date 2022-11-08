@@ -1,10 +1,10 @@
 import bellman_equation_solver
-# import gridworld
+import gridworld
 # import importance_sampling
 
 def main():
     bellman_equation_solver.execute()
-    # gridworld.execute()
+    gridworld.execute()
     # importance_sampling.execute()
 
 if __name__=="__main__":
