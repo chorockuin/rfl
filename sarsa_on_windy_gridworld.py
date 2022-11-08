@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 from collections import defaultdict
 from windy_gridworld import WindyGridworldEnv
-import plotting
+import plotting_util
 
 def make_epsilon_greedy_policy(Q, epsilon, nA):
     """
@@ -43,7 +43,7 @@ def sarsa(env, num_episodes, discount_factor=1.0, alpha=0.5, epsilon=0.1):
     Q = defaultdict(lambda: np.zeros(env.action_space.n))
     
     # 그래프를 그리기 위한 정보를 저장합니다.
-    stats = plotting.EpisodeStats(
+    stats = plotting_util.EpisodeStats(
         episode_lengths=np.zeros(num_episodes),
         episode_rewards=np.zeros(num_episodes))
 
@@ -68,7 +68,7 @@ def sarsa(env, num_episodes, discount_factor=1.0, alpha=0.5, epsilon=0.1):
             
             # 다음 action을 선택합니다.
             next_action_probs = policy(next_state)
-            next_action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
+            next_action = np.random.choice(np.arange(len(next_action_probs)), p=next_action_probs)
             
             # Update statistics
             stats.episode_rewards[i_episode] += reward
@@ -97,5 +97,5 @@ def delta(Q, state, action, reward, next_state, next_action, discount_factor=1.0
 def execute():
     env = WindyGridworldEnv()
     Q, stats = sarsa(env, 200)
-    plotting.plot_episode_stats(stats)
+    plotting_util.plot_episode_stats(stats)
     print(f'\n실행 결과 탭을 확인하세요.')

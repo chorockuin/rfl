@@ -5,7 +5,7 @@ import sys
 from collections import defaultdict
 
 from blackjack import BlackjackEnv
-import plotting
+import plotting_util
 
 def make_epsilon_greedy_policy(epsilon, nA, Q=None):
     """
@@ -67,7 +67,7 @@ def mc_control_importance_sampling(env, num_episodes, behavior_policy, discount_
     
     # 학습하려는 greedy target policy입니다.
     # Todo 1
-    target_policy
+    target_policy = make_epsilon_greedy_policy(0., env.action_space.n, Q)
     
     # Episode를 반복합니다.
     for i_episode in range(1, num_episodes + 1):
@@ -101,21 +101,22 @@ def mc_control_importance_sampling(env, num_episodes, behavior_policy, discount_
             state, action, reward = episode[t]
             # Todo 2
             # time t이후의 discounted return입니다.
-            G 
+            G = discount_factor * G + reward
             # Todo 3
             # weighted importance sampling formula의 분모를 업데이트합니다.
-            C[state][action]
+            C[state][action] += W
             # Todo 4
             # action value function을 업데이트합니다.
-            Q[state][action] 
+            Q[state][action] += (W / C[state][action]) * (G - Q[state][action])
             # behavior policy가 생성한 episode의 한 step이 
             # target policy에서 재현할 수 없을 때의 행동을 결정합니다.
             if action !=  np.argmax(target_policy(state)):
+                break
             # Todo 5
                 
             # Todo 3
             # Importance sampling weight를 업데이트합니다.
-            W = 
+            W = W * 1./behavior_policy(state)[action]
         
     return Q, target_policy
 
@@ -124,7 +125,7 @@ def execute():
     print('실행 결과 탭을 확인하세요!')
 
     # Todo 1
-    random_policy = 
+    random_policy = make_epsilon_greedy_policy(1., env.action_space.n)
     Q, policy = mc_control_importance_sampling(env, num_episodes=500000, behavior_policy=random_policy)
     # For plotting: Create value function from action-value function
     # by picking the best action at each state
@@ -132,4 +133,4 @@ def execute():
     for state, action_values in Q.items():
         action_value = np.max(action_values)
         V[state] = action_value
-    plotting.plot_value_function(V, title="Optimal Value Function")
+    plotting_util.plot_value_function(V, title="Optimal Value Function")

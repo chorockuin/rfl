@@ -32,6 +32,3 @@ def bellman_equation_solver():
     
     # state value function vector를 int 타입으로 변환하여 소수점 이하를 버립니다.
     return state_value_function_vector.astype(int)
-
-if __name__ == "__main__":
-    main()

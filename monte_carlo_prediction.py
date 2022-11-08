@@ -1,11 +1,12 @@
 import gym
 import matplotlib
 import numpy as np
+import pandas as pd
 import sys
 from collections import defaultdict
 
-from gym.envs.toy_text.blackjack import BlackjackEnv
-import plotting
+from blackjack import BlackjackEnv
+import plotting_util
 
 def mc_prediction(policy, env, num_episodes, discount_factor=1.0):
     """
@@ -45,7 +46,7 @@ def mc_prediction(policy, env, num_episodes, discount_factor=1.0):
         # 게임이 종료될 때까지 드로우를 진행합니다.
         while True:
             action = policy(state)
-            next_state, reward, done, _ = env.step(action)
+            next_state, reward, done = env.step(action)
             episode.append((state, action, reward))
             if done:
                 break
@@ -81,5 +82,4 @@ def execute():
     num_episodes=10000
     print(f'{num_episodes = }')
     V_10k = mc_prediction(sample_policy, env, num_episodes)
-    # plotting.df_line_plot(V_10k, title=f'{num_episodes} steps')
-    print(V_10k)
+    plotting_util.plot_value_function(V_10k, title=f'{num_episodes} steps')

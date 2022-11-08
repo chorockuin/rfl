@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from collections import defaultdict
 from cliff_walking import CliffWalkingEnv
-import plotting
+import plotting_util
 from memory import ReplayBuffer
 
 def make_epsilon_greedy_policy(Q, epsilon, nA):
@@ -43,7 +43,7 @@ def q_learning(env, num_episodes, discount_factor=1.0, alpha=0.5, epsilon=0.1):
     buffer = ReplayBuffer(2500, 1)
 
     # 그래프를 그리기 위한 정보를 저장합니다.
-    stats = plotting.EpisodeStats(
+    stats = plotting_util.EpisodeStats(
         episode_lengths=np.zeros(num_episodes),
         episode_rewards=np.zeros(num_episodes))    
     
@@ -67,21 +67,25 @@ def q_learning(env, num_episodes, discount_factor=1.0, alpha=0.5, epsilon=0.1):
             next_state, reward, done, _ = env.step(action)
             
             # Todo 1
+            buffer.push(state, action, next_state, reward, done)
 
             if done:
                 break
             
             state = next_state
     
-    # Todo 2
+        # Todo 2
+        for i in range(20):
+            for sample in buffer.sample_batch(100):
+                Q[sample.state][sample.action] += alpha * delta(Q, sample.state, sample.action, sample.next_state, sample.reward)
 
     return Q, stats
 
 # Todo 3
 def delta(Q, state, action, next_state, reward, discount_factor=1.0):
-    best_next_action = 
-    td_target = 
-    td_delta = 
+    best_next_action = np.argmax(Q[next_state])
+    td_target = reward + discount_factor * Q[next_state][best_next_action]
+    td_delta = td_target - Q[state][action]
     
     return td_delta
 

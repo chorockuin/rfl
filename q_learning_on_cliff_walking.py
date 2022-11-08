@@ -5,8 +5,8 @@ import matplotlib
 import numpy as np
 import pandas as pd
 from collections import defaultdict
-from gym.envs.toy_text.cliffwalking import CliffWalkingEnv
-import plotting
+from cliff_walking import CliffWalkingEnv
+import plotting_util
 
 def make_epsilon_greedy_policy(Q, epsilon, nA):
     """
@@ -35,14 +35,14 @@ def q_learning(env, num_episodes, discount_factor=1.0, alpha=0.5, epsilon=0.1):
     Returns:
         A tuple (Q, episode_lengths).
         Q is the optimal action-value function, a dictionary mapping state -> action values.
-        stats is an EpisodeStats object with two numpy arrays for episode_lengths and       episode_rewards.
+        stats is an EpisodeStats object with two numpy arrays for episode_lengths and episode_rewards.
     """
     
     # state -> (action -> action-value)로 매핑하는 nested dictionary입니다.
     Q = defaultdict(lambda: np.zeros(env.action_space.n))
 
     # 그래프를 그리기 위한 정보를 저장합니다.
-    stats = plotting.EpisodeStats(
+    stats = plotting_util.EpisodeStats(
         episode_lengths=np.zeros(num_episodes),
         episode_rewards=np.zeros(num_episodes))    
     
@@ -93,5 +93,4 @@ def delta(Q, state, action, reward, next_state, discount_factor=1.0):
 def execute():
     env = CliffWalkingEnv()
     Q, stats = q_learning(env, 500)
-    # plotting.plot_episode_stats(stats)
-    print(stats)
+    plotting_util.plot_episode_stats(stats)

@@ -4,8 +4,8 @@ import numpy as np
 import sys
 from collections import defaultdict
 
-from gym.envs.toy_text.blackjack import BlackjackEnv
-import plotting
+from blackjack import BlackjackEnv
+import plotting_util
 
 def make_epsilon_greedy_policy(Q, epsilon, nA):
     """
@@ -86,7 +86,7 @@ def mc_control_epsilon_greedy(env, num_episodes, discount_factor=1.0, epsilon=0.
         while True:
             probs = policy(state)
             action = np.random.choice(np.arange(len(probs)), p=probs)
-            next_state, reward, done, _ = env.step(action)
+            next_state, reward, done = env.step(action)
             episode.append((state, action, reward))
             if done:
                 break
@@ -121,5 +121,4 @@ def execute():
     for state, actions in Q.items():
         action_value = np.max(actions)
         V[state] = action_value
-    # plotting.plot_value_function(V, title="Optimal Value Function")
-    print(V)
+    plotting_util.plot_value_function(V, title="Optimal Value Function")
